@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>In-Out Time</title>
+</head>
+<body>
+  <h2>Welcome</h2>
+  <p id="userInfo"></p>
+  <button onclick="markTime('in')">IN</button>
+  <button onclick="markTime('out')">OUT</button>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("userData"));
+    if (user) {
+      document.getElementById("userInfo").innerText = `Logged in as: ${user.name || user.email || user.mobile}`;
+    }
+
+    function markTime(type) {
+      const now = new Date().toLocaleTimeString();
+      alert(`${type.toUpperCase()} marked at ${now}`);
+    }
+  </script>
+</body>
+</html>
