@@ -1,70 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Phone Auth</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-auth-compat.js"></script>
+  <title>OTPless Login</title>
+  <script src="https://otpless.com/auth.js"></script>
 </head>
 <body>
-  <h2>Login with Phone Number</h2>
-  <input type="text" id="phoneNumber" placeholder="+91XXXXXXXXXX">
-  <div id="recaptcha-container"></div>
-  <button onclick="sendOTP()">Send OTP</button>
-
-  <div id="otp-section" style="display:none;">
-    <input type="text" id="otp" placeholder="Enter OTP">
-    <button onclick="verifyOTP()">Verify OTP</button>
-  </div>
+  <h2>Login with WhatsApp</h2>
+  <div id="otpless-login-page"></div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDDPlxejM1YVgruy-WlslcBp4IHAYhdmXI",
-      authDomain: "timing-fa5ac.firebaseapp.com",
-      projectId: "timing-fa5ac",
-      storageBucket: "timing-fa5ac.appspot.com",
-      messagingSenderId: "1090842735373",
-      appId: "1:1090842735373:web:2942dd56e2578bcd8b3644"
-    };
+    function otpless(otplessUser) {
+      // ✅ You get user data here
+      console.log("User Info:", otplessUser);
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+      // Store data if needed
+      localStorage.setItem("userData", JSON.stringify(otplessUser));
 
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-      size: 'normal',
-      callback: (response) => {
-        console.log("reCAPTCHA verified");
-      }
-    });
-
-    function sendOTP() {
-      const phoneNumber = document.getElementById('phoneNumber').value;
-      if (!phoneNumber.startsWith('+91') || phoneNumber.length !== 13) {
-        alert('Please enter a valid 10-digit phone number in the format +91XXXXXXXXXX');
-        return;
-      }
-
-      const appVerifier = window.recaptchaVerifier;
-      auth.signInWithPhoneNumber(phoneNumber, appVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          document.getElementById('otp-section').style.display = 'block';
-        }).catch((error) => {
-          console.error("SMS not sent", error);
-          alert("Failed to send OTP: " + error.message);
-        });
-    }
-
-    function verifyOTP() {
-      const code = document.getElementById('otp').value;
-      window.confirmationResult.confirm(code).then((result) => {
-        const user = result.user;
-        console.log("User signed in:", user);
-        alert("Logged in successfully!");
-      }).catch((error) => {
-        console.error("OTP verification failed", error);
-        alert("Invalid OTP.");
-      });
+      // ✅ Redirect to another page after login
+      window.location.href = "in-out.html";  // 🔁 Replace with your destination page
     }
   </script>
 </body>
