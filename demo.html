@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Phone Auth with Firebase</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-auth.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        input {
+            margin: 10px 0;
+            padding: 8px;
+            width: 200px;
+        }
+
+        button {
+            padding: 8px 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Login with Phone Number</h2>
+    <input type="text" id="phoneNumber" placeholder="+91XXXXXXXXXX">
+    <div id="recaptcha-container"></div>
+    <button onclick="sendOTP()">Send OTP</button>
+
+    <div id="otp-section" style="display:none;">
+        <input type="text" id="otp" placeholder="Enter OTP">
+        <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDPlxejM1YVgruy-WlslcBp4IHAYhdmXI",
+            authDomain: "timing-fa5ac.firebaseapp.com",
+            projectId: "timing-fa5ac",
+            storageBucket: "timing-fa5ac.appspot.com",
+            messagingSenderId: "1090842735373",
+            appId: "1:1090842735373:web:2942dd56e2578bcd8b3644"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // reCAPTCHA verifier
+        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+            'size': 'normal',
+            'callback': (response) => {
+                console.log("reCAPTCHA verified");
+            }
+        }, auth);
+
+        window.sendOTP = function () {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const appVerifier = window.recaptchaVerifier;
+
+            signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    document.getElementById('otp-section').style.display = 'block';
+                    alert("OTP sent!");
+                })
+                .catch((error) => {
+                    console.error("SMS not sent", error);
+                    alert("Failed to send OTP: " + error.message);
+                });
+        }
+
+        window.verifyOTP = function () {
+            const code = document.getElementById('otp').value;
+            window.confirmationResult.confirm(code)
+                .then((result) => {
+                    const user = result.user;
+                    console.log("User signed in:", user);
+                    alert("Login successful!");
+                    // Redirect or show in/out time UI here
+                })
+                .catch((error) => {
+                    console.error("OTP verification failed", error);
+                    alert("Invalid OTP. Please try again.");
+                });
+        }
+    </script>
+
+</body>
+
+</html>
